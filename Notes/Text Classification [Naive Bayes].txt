@@ -1,0 +1,70 @@
+# Different examples of text classification (Supervised Learning tasks)
+# Topic Identification
+# Spam Detection
+# Sentiment Analysis
+# Spelling Correction
+
+# X: set of attributes or features (x1, x2, x3, ..xn) e.g. each feature can be an important word, for spam email, "Nigeria", "deposit money" can be 2 features
+# Y: set of class labels (Spam, not spam), (topic1, topic2, topic3)
+
+# Types of features
+# 1) Words (most common type of feature, 
+	how do we identify which words are important?
+	Normalization: Make all lower case vs As-is?, 
+	Stemming,Lemmization)
+# 2) Capitalization (White House vs white house)
+# 3) Parts of speech (Adjective, noun, pronouns etc)
+# 4) Grammatical structure
+# 5) Grouping of words, same semantics (digits, dates, honourifics, same meanings)
+
+
+#---------------------------------------------------------------------------------------------------------
+# Naive Bayes (Baseline model)
+
+# update the likelihood of each class given new information
+# Set a Prior Probability: Pr(y=class1) Pr(y=class2) Pr(y=class3)
+# Change the probability based on new information
+# Pr(y=class1 | x = "Python")
+# Posterior probability = (Prior probability * likelihood) / Evidence
+# Pr(y|X) = (Pr(y)*Pr(X|y))/Pr(X)
+
+# Naive Bayes Classification uses this bayes rule to predict the class Pr(y|X)
+# Naive Assumption: Given the class label, the features are assumed to be independent of each other.
+# Pr("Python Download" | y) = Pr("Python" | y) * Pr("Download" | y)
+
+
+
+# Parameters
+# 1) Prior Probabilities: Pr(y) # by counting the instances of y in the dataset = n/N
+# 2) Likelihood: Pr(xi | y) # count the number of times each feature xi appears in for every class y 
+
+What happens if Pr(xi | y ) = 0? when the instance doesnt happen?
+We need to smooth parameters. Add a dummy count 1) Laplace smoothing or 2) Additive smoothing 
+Pr(xi | y) = (k+1)/(p+n), where n is number of features
+
+
+#---------------------------------------------------------------------------------------------------------
+# Naive Bayes Variations
+# 1) Multinomial Naive Bayes (Assuming the data follows a multinomial distribution, each feature value is a count, e.g. word counts TF-IDF weighting)
+#       Multinomial Naive Bayes is good for word count. More common
+#       Assuming multiple instances of the same feature, such as the count of the feature/word.
+# 2) Bernoulli Model (Data follows a multivariate bernoulli distribution. Each feature is binary)
+#       It matters only that the word is present or not present and not on how many times the word is present. 
+#       Also doesnt matter whether the word is significant or not. 
+
+
+
+#---------------------------------------------------------------------------------------------------------
+# Naive Bayes Code
+
+from sklearn import naive_bayes
+
+clfrNB = naive_bayes.MultinomialNB()
+clfrNB.fit(train_data, train_labels) # or naive_bayes.MultinomialNB.fit(train_data, train_labels)
+
+predicted_labels = clfrNB.predict(test_data)
+
+# score
+metrics.f1_score(test_labels, predicted_labels, average = "micro")
+
+

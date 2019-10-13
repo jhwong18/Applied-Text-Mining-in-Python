@@ -1,0 +1,24 @@
+# Topic Modelling
+# A coarse-level analysis of what's in a text collection
+# In a document, there are multiple topics and each topic is a class. Each topic contains words that are more probable to appear in that topic
+# Topics are represented as a distribution of words
+
+#--------------------------------------------------------------------------------------------------
+# Topic modelling is used to find out what the document is about. Which topic is the document discussing on?
+
+# Topic modelling, we need:
+# 1) text collection or corpus
+# 2) Number of topics we want to find (not known what are the topics)
+
+# Objective: (Text clustering problem, where documents and words clustered simultaneously)
+# 1) The actual topics (top 10, 20, number based on what we pre-specify)
+# 2) Topic distribution 
+
+# we want to find what words comes/clustered together?
+# what documents comes/clustered together? What docs are of the same topic?
+# what is the distribution of words in the document? then we can build the topic for the document
+
+#--------------------------------------------------------------------------------------------------
+# Models used
+# 1) Probablistic Latent Semantic Analysis (PLSA)
+# 2) Latent Dirichlet Allocation (LDA), more popular/common

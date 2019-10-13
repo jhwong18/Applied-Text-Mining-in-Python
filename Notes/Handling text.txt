@@ -1,0 +1,54 @@
+# Sentences
+
+len(sentence1)
+sentence1.split(" ")
+[w for w in sentence1 if len(w)>3]
+[w for w in sentence1 if w.istitle()]
+[w for w in sentence1 if w.endswith("s")]
+
+# finding unique words
+
+set(sentence1) 
+len(set(sentence1))
+[w.lower() for w in sentence1 ] #making all words to be lower
+[w for w in sentence1 if w.islower() ] #taking words only if its lower
+
+.startswith("d")
+.endswith("d")
+.isupper()
+.islower()
+.istitle()
+.isalpha() # is it alphabets
+.isdigit() # is it digits
+.isalnum()
+.split(" ") # split at space
+.split("d") # split at letter d
+.join()
+.rstrip() # take out spaces from the end
+.lstrip()
+.strip() # take out spaces from front and back
+.splitlines()
+.find()
+.rfind()
+.replace("u","v")
+
+
+# Handling large texts
+
+# reading files line by line
+f = open("Under.text", "r")
+f.readline()
+
+# reading the full file
+f.seek(0) # to reset to the start of the file
+txt12 = f.read() # all lines
+txt12.splitlines()
+txt12[0]
+
+.open(filename, mode)
+.readline()
+.read()
+.read(4) # read 4 characters
+.seek(3) # reset to the third character
+.write(message)
+.close()

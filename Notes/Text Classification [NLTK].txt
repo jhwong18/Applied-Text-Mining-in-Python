@@ -1,0 +1,168 @@
+# There are supervised text classification algorithms in the package NLTK
+# 1) NaiveBayesClassifier
+# 2) DecisionTreeClassifier
+# 3) ConditionalExponentialClassifier
+# 4) MaxentClassifier
+# 5) WekaClassifier
+# 6) SciKit-learn Classifier (allows us to call underlying classifiers in the SciKit-learn package
+
+#-------------------------------------------------------------------------------------------------------------------
+# 1) NaiveBayesClassifier
+
+from nltk.classify import NaiveBayesClassifier
+NBclassifier = NaiveBayesClassifier.train(train_set)
+NBclassifier.classify(unlabeled_instance) # 1 test observation
+NBclassifier.classify_many(unlabeled_instances) # test set, multiple observations
+
+nltk.classify.until.accuracy(NBclassifier, test_set) # accuracy/score/performance of the classifier
+NBclassifier.labels() # tells us all the labels that the classifier has trained on 
+NBclassifier.show_most_informative_features()  # tells us the top few features that are most important/informative for the classifier
+
+
+#-------------------------------------------------------------------------------------------------------------------
+# 2) SciKit-learn Classifier
+from nltk.classify import SklearnClassifier
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.svm import SVC
+
+clfrNB = SklearnClassifier(MultinomialNB()).train(train_set)
+clfrSVM = SklearnClassifier(SVC(),kernel="linear").train(train_set)
+
+
+#-------------------------------------------------------------------------------------------------------------------
+# Case Study: Data Prep, CountVectorizer, TiDF, n-grams
+
+
+#------------------------------------------------------------
+# Data Prep
+import numpy as np
+import pandas as pd
+df = pd.read.csv("Amazon_Unlocked_Mobile.csv")
+df = df.sample(sample_frac = 0.1,random_state = 10)
+df.head()
+
+# Drop missing values
+df.dropna(inplace=True)
+
+# Remove any 'neutral' ratings equal to 3
+df[df["Rating"]!=3]
+
+# Encode 4s and 5s as 1 (rated positively)
+# Encode 1s and 2s as 0 (rated poorly)
+df["Positively Rated"] = np.where(df["Rating"]>3,1,0)
+
+
+df['Positively Rated'].mean() # output = 0.7, imbalanced classes
+
+# split train, test dataset
+from sklearn import train_test_split
+
+X_train, X_train, X_test, y_train, y_test = train_test_split(df['Reviews'], df['Positively Rated'], random_state=0)
+
+#------------------------------------------------------------
+# Count Vectorizer
+# CountVectorizer allows us to use the bag-of-words approach by converting a collection of text documents into a matrix of token counts.
+
+# Builds a collection of vocabularly from the dataset, in this case the X_train dataset
+
+from sklearn.feature_extraction.text import CountVectorizer
+vect = CountVectorizer().fit(X_train)
+vect.get_feature_names()[::2000] # this includes words and numbers, need to clean them
+len(vect.get_feature_names()) # output 53216 features
+
+X_train_vectorized = vect.transform(X_train)
+X_train_vectorized # convert into a matrix of features
+
+
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
+model.fit(X_train_vectorized, y_train)
+
+from sklearn.metrics import roc_auc_score
+
+predictions = model.predict(vect.transform(X_test))
+print('AUC: ', roc_auc_score(y_test, predictions))
+# get the feature names as numpy array
+feature_names = np.array(vect.get_feature_names())
+
+# Sort the coefficients from the model
+sorted_coef_index = model.coef_[0].argsort()
+
+# Find the 10 smallest and 10 largest coefficients
+# The 10 largest coefficients are being indexed using [:-11:-1]
+# so the list returned is in order of largest to smallest
+
+print('Smallest Coefs:\n{}\n'.format(feature_names[sorted_coef_index[:10]]))
+print('Largest Coefs: \n{}'.format(feature_names[sorted_coef_index[:-11:-1]]))
+
+
+#------------------------------------------------------------
+# Tfidf
+
+# Tf–idf, or Term frequency-inverse document frequency, allows us to weight terms 
+# based on how important they are to a document
+
+# High weight is given to terms that appear often in a particular document, but don't appear often in the corpus. 
+# Features with low tf–idf are either commonly used across all documents or rarely used and only occur in long documents.
+# Features with high tf–idf are frequently used within specific documents, but rarely used across all documents.
+
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Fit the TfidfVectorizer to the training data specifiying a minimum document frequency of 5
+# mindf, which allows us to specify a minimum number of documents in which a token needs to appear to become part of the vocabulary.
+# For example, here we'll pass in min_df = 5, which will remove any words from our vocabulary that appear in fewer than five documents
+# List of features with the smallest tf–idf either commonly appeared across all reviews or only appeared rarely in very long reviews. 
+# List of features with the largest tf–idf contains words which appeared frequently in a review, but did not appear commonly across all reviews.
+
+
+vect = TfidfVectorizer(min_df=5).fit(X_train)
+len(vect.get_feature_names())
+X_train_vectorized = vect.transform(X_train)
+model = LogisticRegression()
+model.fit(X_train_vectorized, y_train)
+predictions = model.predict(vect.transform(X_test))
+print('AUC: ', roc_auc_score(y_test, predictions))
+
+
+feature_names = np.array(vect.get_feature_names())
+sorted_tfidf_index = X_train_vectorized.max(0).toarray()[0].argsort()
+print('Smallest tfidf:\n{}\n'.format(feature_names[sorted_tfidf_index[:10]]))
+print('Largest tfidf: \n{}'.format(feature_names[sorted_tfidf_index[:-11:-1]]))
+
+
+sorted_coef_index = model.coef_[0].argsort()
+
+print('Smallest Coefs:\n{}\n'.format(feature_names[sorted_coef_index[:10]]))
+print('Largest Coefs: \n{}'.format(feature_names[sorted_coef_index[:-11:-1]]))
+
+# These reviews are treated the same by our current model. Still the model cannot differentiate word sequences/order
+print(model.predict(vect.transform(['not an issue, phone is working', 'an issue, phone is not working'])))
+
+
+
+#------------------------------------------------------------
+# ngrams
+# To create these n-gram features, we'll pass in a tuple to the parameter ngram_range, 
+# where the values correspond to the minimum length and maximum lengths of sequences.
+
+# Fit the CountVectorizer to the training data specifiying a minimum
+# document frequency of 5 and extracting 1-grams and 2-grams
+
+vect = CountVectorizer(min_df=5, ngram_range=(1,2)).fit(X_train)
+X_train_vectorized = vect.transform(X_train)
+len(vect.get_feature_names())
+
+model = LogisticRegression()
+model.fit(X_train_vectorized, y_train)
+predictions = model.predict(vect.transform(X_test))
+print('AUC: ', roc_auc_score(y_test, predictions))
+
+feature_names = np.array(vect.get_feature_names())
+sorted_coef_index = model.coef_[0].argsort()
+print('Smallest Coefs:\n{}\n'.format(feature_names[sorted_coef_index[:10]]))
+print('Largest Coefs: \n{}'.format(feature_names[sorted_coef_index[:-11:-1]]))
+
+# These reviews are now correctly identified
+print(model.predict(vect.transform(['not an issue, phone is working',
+'an issue, phone is not working'])))

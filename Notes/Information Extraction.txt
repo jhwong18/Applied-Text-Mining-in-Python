@@ -1,0 +1,28 @@
+# Information Extraction
+# Goal: Identify and extract fields of interest from free text (Named Entity Recognition Modelling)
+# examples of fields of interest are: "Named entities like People, Places, Dates, Companies" , "Relations" 
+
+# In this goal: (Named Entity Recognition Modelling)
+# Examples of such tasks are: Question answering, What does Erbitux treat? Who gave Anita the rose
+
+# Step 1) Identify the mentions/phrases: Boundary detection (identify entities, Anita, Joseph, Erbitux, Diseases/Medications)
+	approaches to identify mentions/phrases
+	a) Regular Expressions (for well-formatted fields like date, phone numbers)
+	b) Machine learning approach to use features to identify words. Possible to use regex, parts of speech as features
+	
+	usually the entities involves: person, organization, location, others 
+	(There is built in NER modelling which identifies person, organization, location) but if its in other domains, e.g. diseases etc
+	you will need to build your own NER models
+
+# Step 2) Identify the type: Tagging/Classification (Labelling whether it is a place, font, etc)
+	Understanding if rose is an object, Anita is a person, Erbitux is a medication
+
+# Step 3) Identify relationships between named entities
+	Understanding that Erbitux is a treatment to lung cancer. Anita is Joseph's friend
+
+# Step 4) Co-reference resolution: Disambiguate mentions and group mentions togther. Group mentions together if they are referring to the same entity
+	e.g. Pronoun resolution, to identify he as referring to Joseph, She as referring to Anita
+	
+
+Each of these tasks from step 1 to step 4 helps us to solve question answering.
+

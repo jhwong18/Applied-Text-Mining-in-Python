@@ -1,0 +1,58 @@
+# Semantics
+# Grouping of words with similar meanings together
+# Semantics is a building block in natural langugage understanding tasks
+# 1) Textual Entailment
+# 2) Paraphrasing (a task to re-write a sentence into another with the same meaning)
+
+# Textual Entailment
+# It says that the smaller sentence or one of the two sentences derives its meaning or entails its meaning from another piece of text. 
+# So you have a text document or a text passage and a sentence. And based on the information in the text passage, 
+# you need to say whether the sentence is correct or it derives its meaning from there or not.
+
+
+# WordNet: a package which is a semantic dictionary of English words, interlinked by semantic relations
+# includes part of speech, word senses, synonyms, ... 
+# organizes the words into a tree (path similarity: inversely related to the path distance)
+# So one such measure of using this hierarchy for defining semantic similarity is path similarity. 
+# You could imagine that you would start with one of these concepts, and see how many steps you need to take to get to the other. 
+# In other words, you are finding a shortest path between these two concepts in this hierarchy.
+
+# 1) Path similarity: 1/(number of steps to reach from one word to another e.g. deer to giraffe)
+# Lowest common subsumer is that ancestor that is closest to both concepts. the ancestor that the 2 words share.
+# 2) Lowest Common Subsumer (LCS): LinSum(u,v) = 2 * log P(LCS(u,v)) / (log P(u) + log P(v))
+
+
+# Other measures of similarity: Collocations and Distributional similarity
+# 3) Collocations: words that are frequently appearing in similar concept are more likely to be semantically related
+		its also important to see how frequent the individual words are. and hence higher chances of co-occur. e.g. "a" "the"
+		Hence we use pointwise mutual information PMI(w,c) = log[P(word,corpus)/( P(word)*P(corpus) )]
+# 4) Distributional similarity:
+
+#-------------------------------------------------------------------------------------------------------------------
+import nltk
+from nltk.corpus import wordnet as wn
+
+# get the meaning and tree structure of the word
+deer = wn.synset("deer.n.01") # treat deer as a noun and give me the first synset
+elk = wn.synset("elk.n.01") # treat elk as a noun and give me the first synset
+
+# use path similarity
+deer.path_similarity(elk)
+deer.path_similarity(horse)
+
+# use information criteria
+from nltk.corpus import wordnet_ic
+brown_ic = wordnet_ic.ic("ic-brown.dat") # we set brown_ic dataset as an information criterion 
+
+deer.lin_similarity(elk, brown_ic)
+deer.lin_similarity(horse, brown_ic)
+
+#---------------------------------------------------------------------------------------------------
+# Other measures of similarity: Collocations and Distributional similarity
+
+import nltk
+from nltk.collocations import *
+
+bigram_measures = nltk.collocations.BigramAssocMeasures()
+finder = BigramCollocationFinder.from_words(text)
+finder.nbest(bigram_measures.pmi,10)

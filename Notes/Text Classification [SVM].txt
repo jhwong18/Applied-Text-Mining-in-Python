@@ -1,0 +1,46 @@
+# SVM 
+# SVMs are linear classifiers that find a hyperplane to separate 2 classes of data: positive and negative
+# Given training data (x1,y1), (x2,y2),....; where yi is binary and xi = (xi1,xi2,...xin) is a observation
+# SVMs find the linear boundary that maximizes the margin from the support vectors
+
+
+# Multiclass SVM
+# one vs rest (class1 vs not class1), (class2 vs not class2), (class3 vs not class3)
+# one vs one (class1 vs class2), (class2 vs class3), (class3 vs class1). n-class SVM has n choose 2 number of classifiers
+
+#-------------------------------------------------------------------------------------------------------------------------------
+# Parameter:
+# C: regularization parameter. Large values of C = less regularization. Fit the training data as much as possible, every datapoint is important
+
+# Regularization means how important we should give each observation as compared to a better generalized model. 
+# Higher regularization, more generalizable. Less regularization, more overfitting
+
+# Kernel: Linear Kernel, RBF, polynomial
+# multi-class
+# class_weight: Different classes can get different weight
+
+#-------------------------------------------------------------------------------------------------------------------------------
+# When to use
+# SVM tend to be most accurate classifiers in text, especially in high-dimensional data
+# Strong theoretical foundation, handles only numeric features
+# Hence need to convert categorical features to numeric features
+# Normalization
+# Hyperplane hard to interpret
+
+
+
+#-------------------------------------------------------------------------------------------------------------------------------
+# Code 
+
+from sklearn import svm
+clfr.SVM = svm.SVC(kernel = "linear", C=0.1) # usually linear kernel for text classifications. Default value for C = 1
+clfr.fit(train_data, train_labels)
+predicted_labels = clfr.predict(test_data)
+
+# Parameter tuning of SVM
+
+from sklearn import model_selection
+X_train, X_test, y_train, y_test = model_selection.train_test_split(train_data, train_labels, test_size = 0.333, random_state = 0)
+
+predicted_labels = model_selection.cross_val_predict(clfrSVM, train_data, train_labels, cv=5)
+

@@ -1,0 +1,99 @@
+# Regex 
+# Regular expressions
+
+# finding specific words
+[w for w in text12 if w.startswith("#")]
+[w for w in text12 if w.startswith("@")]
+
+
+# finding words with more patterns using regular expression
+@[A-Za-z0-9_]+
+
+For example '@[A-Za-z0-9_]+' will return all words that:
+start with '@' and are followed by at least one:
+capital letter ('A-Z')
+lowercase letter ('a-z')
+number ('0-9')
+or underscore ('_')
+
+[]+ means to get the characters (repeat) what is inside the [] at least once 
+. wildcard, matches a single character (any)
+^ start of a string
+$ end of a string
+[] matches one of the set of characters within []
+[a-z] matches one of the range of the characters a,b,c...z
+[^abc] matches a character that is not a,b, or c
+a|b matches either a or b where a and b are strings
+() scoping for operators
+\ escape character for special characters (\t,\n, \b)
+\b matches a word boundary
+\d to match any digit equivalent [0-9]
+\D to match any non-digit equivalent to [^0-9]
+\s to match any whitespace equivalent to [ \t\n\r\f\v]
+\S to match any non-whitespace equivalent to [^ \t\n\r\f\v]
+\w to match any alphanumeric equivalent to [ A-Za-z0-9_]
+\W to match any non-alphanumeric equivalent to [^ A-Za-z0-9_]
+
+
+Repetitions
+* matches zero or more occurrences
++ matches one or more occurrences
+? matches zero or one occurrences
+{n} matches exactly n repetitions, n >= 0
+{,n} matches at most n repetitions, n >= 0
+{n,} matches at least n repetitions, n >= 0
+{m,n} matches at least m and at most n repetitions, n >= 0
+
+
+import re
+re.search("@[A-Za-z0-9_]+",w)
+re.search("@\w+",w)
+re.findall(r"[aeiou]",text12)       # to find all a e i o u
+re.findall(r"[^ aeiou]",text12)       # to find all consonants
+
+
+Regex for dates
+
+different formats for dates
+23-10-2002
+23/10/2002
+23/10/02
+10-23-2002
+23 Oct 2002
+23 October 2002
+Oct 23, 2002
+October 23, 2002
+
+re.finall(r"\d{1,2}[-/]\d{1,2}[-/]\d{4}",datetxt)    # to find all date formats 23-10-2002 23/10/2002 10-23-2002
+re.finall(r"\d{2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}",datetxt) # to find all date formats  23 Oct 2002
+
+re.finall(r"\d{2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{4}",datetxt) # to find all date formats  23 Oct 2002 23 October 2002
+
+re.finall(r"(?:\d{2})? (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* (?:\d{2},)?\d{4}",datetxt) # to find all date formats  23 Oct 2002 23 October 2002
+
+
+#----------------------------------------------------------------------------------------------------------------------------------------
+Regex with Pandas 
+
+import pandas as pd
+
+time_sentences = ["Monday: The doctor's appointment is at 2:45pm.", 
+                  "Tuesday: The dentist's appointment is at 11:30 am.",
+                  "Wednesday: At 7:00pm, there is a basketball game!",
+                  "Thursday: Be back home by 11:15 pm at the latest.",
+                  "Friday: Take the train at 08:10 am, arrive at 09:00am."]
+
+df = pd.DataFrame(time_sentences, columns=['text'])
+df
+
+df["text"].str.len() # number of characters in a line
+df["text"].str.split().str.len() # number of words in a line
+df["text"].str.split().str.contains("appointment") # find which entries contain the word 'appointment'
+df["text"].str.count(r"\d") # find how many times a digit occurs in each string
+df["text"].str.findall(r"\d") # find all occurances of the digits
+df["text"].str.findall(r"(\d?\d):(\d?\d)") # find hours and minutes
+df["text"].str.replace(r"\w+day\b","???") # replace weekdays with ???
+df["text"].str.replace(r"\w+day\b",lambda x:x.groups()[0][:3])
+df['text'].str.extract(r'(\d?\d):(\d\d)') # create new columns from first match of extracted groups
+df['text'].str.extractall(r'((\d?\d):(\d\d) ?([ap]m))') # extract the entire time, the hours, the minutes, and the period
+df['text'].str.extractall(r'(?P<time>(?P<hour>\d?\d):(?P<minute>\d\d) ?(?P<period>[ap]m))') # extract the entire time, the hours, the minutes, and the period with group names
