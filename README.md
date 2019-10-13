@@ -1,4 +1,4 @@
-# Applied-Text-Mining-in-Python
+# Coursera-Applied Text Mining in Python
 Applied Text Mining in Python
 
 This repository contains a collection of the assignments used in the course Applied Text Mining in Python, part of Applied Data Science using Python Specialization from University of Michigan offered by Coursera.
